@@ -1,7 +1,7 @@
 from numpy import nan
 import unittest
 import datetime
-import RawPlateData as rpd
+import classes.RawPlateData as rpd
 
 class TestRawPlateData(unittest.TestCase):
     def setUp(self) -> None:
