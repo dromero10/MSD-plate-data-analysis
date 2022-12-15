@@ -139,5 +139,8 @@ class TestRawPlateData(unittest.TestCase):
         self.assertDictEqual(self.plate_384_4spot.header_data, test_header_384_4spot)
 
     def test_ecl_data(self):
+
+        # check the column names
+        # check the dimensions of the data frame
         pass
 

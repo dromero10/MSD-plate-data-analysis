@@ -1,8 +1,5 @@
-from pathlib import Path
 from string import ascii_uppercase
-
 from general_functions import utility_functions as uf
-
 import pandas as pd
 
 class RawPlateData:
@@ -39,8 +36,10 @@ class RawPlateData:
         'assays'
     ]
 
-    # rows to skip in order to read ecl data. key is spot number and
-    # value is nrows to skip when reading with pd.read_csv
+    # Rows to skip to get to the ECL data portion of the file. The key is spot number and the
+    # value is nrows to skip when reading with pd.read_csv for auto-parsing columns. For example, for a 1-spot plate the 
+    # microplate column labels begin on line 28 and the actual ECL counts begin on the next line (line 29)
+    # i.e. skip index + 1 is the line where the ECL counts begin. 
     SKIP_INDICES_FOR_ECL = {
         1: 28,
         4: 31,
@@ -48,10 +47,9 @@ class RawPlateData:
         10: 36 
     }
 
-    def __init__(self, path: Path):
+    def __init__(self, path: str):
         '''
-        constructor takes in a Path object or just a string of the path that 
-        is passed onto pd.read_csv
+        constructor takes in a string of the path that is passed onto pd.read_csv
         '''
         self.path = path
 
@@ -109,15 +107,17 @@ class RawPlateData:
         stop_index = n_spots * n_rows
         cols = [str(x) for x in range(1, n_cols+1)]
         cols.insert(0,'row')
+        cols.append('unused_col')
 
         ecl_data = pd.read_csv(
             self.path,
             sep = "\t",
-            skiprows = skip,
+            names = cols,
+            usecols = cols[:-1],
+            skiprows = skip + 1,
             nrows = stop_index
-        ).iloc[:,:-1] # last column is empty, not needed
+        )
 
-        ecl_data.columns = cols
         ecl_data['row'] = RawPlateData._create_row_labels(n_rows=n_rows, n_spots=n_spots)
         ecl_data['spot'] = RawPlateData._create_spot_labels(n_rows=n_rows, n_spots=n_spots)
 
