@@ -1,7 +1,12 @@
+import sys
+sys.path.insert(0, 'C:\\Users\\romero.daniel\\Documents\\Python_projects\\MSD_plate_data_analysis')
+
 from numpy import nan
 import unittest
 import datetime
-import classes.RawPlateData as rpd
+from classes import RawPlateData as rpd
+
+
 
 class TestRawPlateData(unittest.TestCase):
     def setUp(self) -> None:
@@ -141,6 +146,56 @@ class TestRawPlateData(unittest.TestCase):
     def test_ecl_data(self):
 
         # check the column names
+        test_col_names_96well = [str(x) for x in range(1, 13)]
+        test_col_names_96well.insert(0, 'row')
+        test_col_names_96well.append('spot')
+
+        test_col_names_384well = [str(x) for x in range(1, 25)]
+        test_col_names_384well.insert(0, 'row')
+        test_col_names_384well.append('spot')
+        
+        cols_1spot = list(self.plate_1spot.ecl_data.columns)
+        cols_4spot = list(self.plate_4spot.ecl_data.columns)
+        cols_7spot = list(self.plate_7spot.ecl_data.columns)
+        cols_10spot = list(self.plate_10spot.ecl_data.columns)
+        cols_384_4spot = list(self.plate_384_4spot.ecl_data.columns)
+
+        self.assertListEqual(test_col_names_96well, cols_1spot)
+        self.assertListEqual(test_col_names_96well, cols_4spot)
+        self.assertListEqual(test_col_names_96well, cols_7spot)
+        self.assertListEqual(test_col_names_96well, cols_10spot)
+        self.assertListEqual(test_col_names_384well, cols_384_4spot)
+
         # check the dimensions of the data frame
-        pass
+        plate_cols_96well = 12
+        plate_cols_384well = plate_cols_96well * 2
+
+        test_ncols_96well = plate_cols_96well + 2 
+        test_ncols_384well = plate_cols_384well + 2 
+
+        plate_rows_96well = 8
+        plate_rows_384well = plate_rows_96well * 2
+        
+        test_nrows_96well_1spot = plate_rows_96well
+        test_nrows_96well_4spot = plate_rows_96well * 4
+        test_nrows_96well_7spot = plate_rows_96well * 7
+        test_nrows_96well_10spot = plate_rows_96well * 10
+
+        test_nrows_384well_4spot = plate_rows_384well * 4
+
+        test_dims_96well_1spot = (test_nrows_96well_1spot, test_ncols_96well)
+        test_dims_96well_4spot = (test_nrows_96well_4spot, test_ncols_96well)
+        test_dims_96well_7spot = (test_nrows_96well_7spot, test_ncols_96well)
+        test_dims_96well_10spot = (test_nrows_96well_10spot, test_ncols_96well)
+
+        test_dims_384well_4spot = (test_nrows_384well_4spot, test_ncols_384well)
+
+        self.assertTupleEqual(test_dims_96well_1spot, self.plate_1spot.ecl_data.shape)
+        self.assertTupleEqual(test_dims_96well_4spot, self.plate_4spot.ecl_data.shape)
+        self.assertTupleEqual(test_dims_96well_7spot, self.plate_7spot.ecl_data.shape)
+        self.assertTupleEqual(test_dims_96well_10spot, self.plate_10spot.ecl_data.shape)
+
+        self.assertTupleEqual(test_dims_384well_4spot, self.plate_384_4spot.ecl_data.shape)
+
+        
 
